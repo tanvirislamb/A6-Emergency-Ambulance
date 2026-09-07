@@ -1,35 +1,35 @@
-import config from "@/Config/envCongig";
-import { prisma } from "@/lib/prisma";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import type { ILoginUser, IRegisterUser, IUser } from "./user.interface";
+import config from "@/Config/envCongig"
+import { prisma } from "@/lib/prisma"
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import type { ILoginUser, IRegisterUser, IUser } from "./user.interface"
 
 const signTokens = (payload: any) => {
   const accessToken = jwt.sign(payload, config.access_secret as string, {
     expiresIn: "1d",
-  });
+  })
   const refreshToken = jwt.sign(payload, config.refresh_secret as string, {
     expiresIn: "7d",
-  });
-  return { accessToken, refreshToken };
-};
+  })
+  return { accessToken, refreshToken }
+}
 
 const registerUserInDb = async (payload: IRegisterUser) => {
-  const { email, password, name, phone, role } = payload;
+  const { email, password, name, phone, role } = payload
 
   if (role?.toUpperCase() === "ADMIN") {
-    throw new Error("You cannot register as an admin");
+    throw new Error("You cannot register as an admin")
   }
   if (role && !["PATIENT", "DISPATCHER"].includes(role.toUpperCase())) {
-    throw new Error("Role must be PATIENT or DISPATCHER");
+    throw new Error("Role must be PATIENT or DISPATCHER")
   }
 
-  const existing = await prisma.user.findUnique({ where: { email } });
+  const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
-    throw new Error("User already exists");
+    throw new Error("User already exists")
   }
 
-  const encryptedPassword = await bcrypt.hash(password, 10);
+  const encryptedPassword = await bcrypt.hash(password, 10)
 
   const user = await prisma.user.create({
     data: {
@@ -40,37 +40,37 @@ const registerUserInDb = async (payload: IRegisterUser) => {
       role: (role?.toUpperCase() || "PATIENT") as any,
     },
     omit: { password: true },
-  });
+  })
 
   const jwtPayload = {
     id: user.id,
     role: user.role,
     email: user.email,
     name: user.name,
-  };
-  const { accessToken, refreshToken } = signTokens(jwtPayload);
+  }
+  const { accessToken, refreshToken } = signTokens(jwtPayload)
 
-  return { accessToken, refreshToken, user };
-};
+  return { accessToken, refreshToken, user }
+}
 
 const loginUserInDb = async (payload: ILoginUser) => {
-  const { email, password } = payload;
+  const { email, password } = payload
 
-  const findUser = await prisma.user.findUnique({ where: { email } });
+  const findUser = await prisma.user.findUnique({ where: { email } })
 
   if (!findUser) {
-    throw new Error("User not found");
+    throw new Error("User not found")
   }
   if (findUser.deletedAt) {
-    throw new Error("Account not found");
+    throw new Error("Account not found")
   }
   if (findUser.status === "SUSPENDED") {
-    throw new Error("Account is suspended");
+    throw new Error("Account is suspended")
   }
 
-  const match = await bcrypt.compare(password, findUser.password);
+  const match = await bcrypt.compare(password, findUser.password)
   if (!match) {
-    throw new Error("Wrong password");
+    throw new Error("Wrong password")
   }
 
   const jwtPayload = {
@@ -78,27 +78,27 @@ const loginUserInDb = async (payload: ILoginUser) => {
     role: findUser.role,
     email: findUser.email,
     name: findUser.name,
-  };
-  const { accessToken, refreshToken } = signTokens(jwtPayload);
+  }
+  const { accessToken, refreshToken } = signTokens(jwtPayload)
 
-  const { password: _, ...safeUser } = findUser;
+  const { password: _, ...safeUser } = findUser
 
-  return { accessToken, refreshToken, user: safeUser };
-};
+  return { accessToken, refreshToken, user: safeUser }
+}
 
 const refreshTokensInDb = async (refreshToken: string) => {
   if (!refreshToken) {
-    throw new Error("No refresh token provided");
+    throw new Error("No refresh token provided")
   }
-  const decoded = jwt.verify(refreshToken, config.refresh_secret as string) as any;
+  const decoded = jwt.verify(refreshToken, config.refresh_secret as string) as any
 
   const user = await prisma.user.findUnique({
     where: { email: decoded.email },
     omit: { password: true },
-  });
+  })
 
   if (!user || user.status === "SUSPENDED" || user.deletedAt) {
-    throw new Error("Invalid refresh token");
+    throw new Error("Invalid refresh token")
   }
 
   const jwtPayload = {
@@ -106,14 +106,14 @@ const refreshTokensInDb = async (refreshToken: string) => {
     role: user.role,
     email: user.email,
     name: user.name,
-  };
-  const tokens = signTokens(jwtPayload);
+  }
+  const tokens = signTokens(jwtPayload)
 
-  return { ...tokens, user };
-};
+  return { ...tokens, user }
+}
 
 export const authService = {
   registerUserInDb,
   loginUserInDb,
   refreshTokensInDb,
-};
+}
