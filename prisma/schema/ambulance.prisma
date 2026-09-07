@@ -1,0 +1,16 @@
+model Ambulance {
+  id            String       @id @unique @default(cuid())
+  vehicleNumber String       @unique
+  type          String
+  capacity      Int
+  stationZone   String
+  availability  Availability @default(AVAILABLE)
+  deletedAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  trips         Trip[]
+
+  @@index([availability])
+  @@index([stationZone])
+  @@map("ambulances")
+}

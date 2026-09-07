@@ -1,0 +1,22 @@
+model User {
+  id          String       @id @unique @default(cuid())
+  email       String       @unique
+  password    String
+  name        String
+  phone       String?
+  role        Role         @default(PATIENT)
+  status      UserStatus   @default(ACTIVE)
+  deletedAt   DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  requests    DispatchRequest[]
+  trips       Trip[]
+  payments    payment[]
+  auditLogs   AuditLog[]
+  driver      Driver?
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@map("users")
+}

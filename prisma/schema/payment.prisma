@@ -1,0 +1,18 @@
+model payment {
+  id            String        @id @unique @default(cuid())
+  customerId    String
+  tripId        String        @unique
+  transactionId String?       @unique
+  amount        Float
+  method        PaymentMethod @default(STRIPE)
+  status        PaymentStatus @default(PENDING)
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  customer      User          @relation(fields: [customerId], references: [id])
+  trip          Trip          @relation(fields: [tripId], references: [id])
+
+  @@index([customerId])
+  @@index([status])
+  @@map("payments")
+}

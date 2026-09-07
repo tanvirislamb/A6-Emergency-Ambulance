@@ -1,0 +1,27 @@
+model Trip {
+  id          String      @id @unique @default(cuid())
+  requestId   String      @unique
+  ambulanceId String
+  driverId    String
+  hospitalId  String?
+  patientId   String
+  status      TripStatus  @default(DISPATCHED)
+  distanceKm  Float?
+  fare        Float?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  request     DispatchRequest @relation(fields: [requestId], references: [id])
+  ambulance   Ambulance   @relation(fields: [ambulanceId], references: [id])
+  driver      Driver      @relation(fields: [driverId], references: [id])
+  hospital    Hospital?   @relation(fields: [hospitalId], references: [id])
+  patient     User        @relation(fields: [patientId], references: [id])
+  payment     payment?
+
+  @@index([patientId])
+  @@index([ambulanceId])
+  @@index([driverId])
+  @@index([status])
+  @@map("trips")
+}

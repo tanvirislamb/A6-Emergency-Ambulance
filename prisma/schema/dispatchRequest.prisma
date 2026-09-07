@@ -1,0 +1,20 @@
+model DispatchRequest {
+  id           String        @id @unique @default(cuid())
+  patientId    String
+  priority     Priority      @default(MEDIUM)
+  patientName  String
+  contact      String
+  pickupLocation String
+  note         String?
+  status       RequestStatus @default(PENDING)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  patient      User          @relation(fields: [patientId], references: [id])
+  trip         Trip?
+
+  @@index([patientId])
+  @@index([status])
+  @@index([priority])
+  @@index([createdAt])
+  @@map("dispatch_requests")
+}

@@ -1,0 +1,50 @@
+enum Role {
+  PATIENT
+  DISPATCHER
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum RequestStatus {
+  PENDING
+  DISPATCHED
+  CANCELLED
+}
+
+enum TripStatus {
+  DISPATCHED
+  EN_ROUTE
+  AT_PICKUP
+  TRANSPORTING
+  ARRIVED
+  COMPLETED
+  CANCELLED
+}
+
+enum Availability {
+  AVAILABLE
+  BUSY
+  OFFLINE
+}
+
+enum PaymentMethod {
+  STRIPE
+  BKASH
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
