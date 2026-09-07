@@ -15,13 +15,7 @@ const createRequestSchema = z.object({
   note: z.string().optional(),
 });
 
-router.post(
-  "/",
-  authMiddleWare(),
-  patientMiddleWare(),
-  validate(createRequestSchema),
-  dispatchRequestController.createRequest,
-);
+router.post("/", authMiddleWare(), patientMiddleWare(), validate(createRequestSchema), dispatchRequestController.createRequest);
 router.get("/my", authMiddleWare(), patientMiddleWare(), dispatchRequestController.getMyRequests);
 router.get("/search", authMiddleWare(), dispatcherMiddleWare(), dispatchRequestController.searchRequests);
 router.get("/:id", authMiddleWare(), patientMiddleWare(), dispatchRequestController.getRequestById);
