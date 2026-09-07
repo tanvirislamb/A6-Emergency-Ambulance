@@ -19,17 +19,9 @@ const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
-const socialSchema = z.object({
-  email: z.string().email("Invalid email format"),
-  name: z.string().optional(),
-  picture: z.string().optional(),
-});
-
 router.post("/register", validate(registerSchema), authController.registerUser);
 router.post("/login", validate(loginSchema), authController.loginUser);
 router.post("/refresh-token", authController.refreshToken);
-router.post("/social", validate(socialSchema), authController.socialLogin);
-router.post("/logout", authController.logout);
 router.get("/me", authMiddleWare(), authController.getMe);
 
 export const authRouter = router;

@@ -112,47 +112,8 @@ const refreshTokensInDb = async (refreshToken: string) => {
   return { ...tokens, user };
 };
 
-const socialLoginInDb = async (googleProfile: any) => {
-  const { email, name, picture } = googleProfile;
-
-  if (!email) {
-    throw new Error("Google profile missing email");
-  }
-
-  let user = await prisma.user.findUnique({ where: { email } });
-
-  if (!user) {
-    const created = await prisma.user.create({
-      data: {
-        email,
-        password: "",
-        name: name || email.split("@")[0],
-        role: "PATIENT",
-      },
-    });
-    user = created;
-  }
-
-  if (user.status === "SUSPENDED") {
-    throw new Error("Account is suspended");
-  }
-
-  const jwtPayload = {
-    id: user.id,
-    role: user.role,
-    email: user.email,
-    name: user.name,
-  };
-  const { accessToken, refreshToken } = signTokens(jwtPayload);
-
-  const { password: _pw, ...safeUser } = user;
-
-  return { accessToken, refreshToken, user: safeUser };
-};
-
 export const authService = {
   registerUserInDb,
   loginUserInDb,
   refreshTokensInDb,
-  socialLoginInDb,
 };

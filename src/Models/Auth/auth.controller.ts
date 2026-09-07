@@ -48,16 +48,6 @@ const refreshToken = async (req: Request, res: Response) => {
   }
 };
 
-const socialLogin = async (req: Request, res: Response) => {
-  try {
-    const { accessToken, refreshToken, user } = await authService.socialLoginInDb(req.body);
-    setAuthCookies(res, accessToken, refreshToken);
-    response(res, true, httpStatus.OK, "Social login successful", user);
-  } catch (error: any) {
-    errorResponse(res, false, httpStatus.BAD_REQUEST, error?.message || "Failed to social login");
-  }
-};
-
 const getMe = async (req: Request, res: Response) => {
   try {
     response(res, true, httpStatus.OK, "User fetched successfully", req.user);
@@ -66,17 +56,9 @@ const getMe = async (req: Request, res: Response) => {
   }
 };
 
-const logout = async (req: Request, res: Response) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-  response(res, true, httpStatus.OK, "Logged out successfully");
-};
-
 export const authController = {
   registerUser,
   loginUser,
   refreshToken,
-  socialLogin,
   getMe,
-  logout,
 };

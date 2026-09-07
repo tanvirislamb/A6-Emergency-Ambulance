@@ -27,18 +27,18 @@ app.use(limiter);
 
 app.use(cors({ origin: process.env.CLIENT_URL || "*", credentials: true }));
 
-app.post("/api/v1/payments/webhook", express.raw({ type: "application/json" }), paymentController.confirmPayment);
+app.post("/api/payments/webhook", express.raw({ type: "application/json" }), paymentController.confirmPayment);
 app.use(json());
 app.use(cookieParser());
 
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/requests", requestRouter);
-app.use("/api/v1/ambulances", ambulanceRouter);
-app.use("/api/v1/drivers", driverRouter);
-app.use("/api/v1/hospitals", hospitalRouter);
-app.use("/api/v1/trips", tripRouter);
-app.use("/api/v1/payments", paymentRouter);
-app.use("/api/v1/admin", adminRouter);
+app.use("/api/auth", authRouter);
+app.use("/api/requests", requestRouter);
+app.use("/api/ambulances", ambulanceRouter);
+app.use("/api/drivers", driverRouter);
+app.use("/api/hospitals", hospitalRouter);
+app.use("/api/trips", tripRouter);
+app.use("/api/payments", paymentRouter);
+app.use("/api/admin", adminRouter);
 
 app.get("/", (_req, res) => {
   res.json({
