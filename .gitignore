@@ -3,5 +3,3 @@ dist
 node_modules
 /generated/prisma
 .vercel
-A4
-test-data
