@@ -1,8 +1,8 @@
-import config from "./Config/envCongig";
-import app from "./app";
+import config from "./Config/envCongig"
+import app from "./app"
 
-const port = config.port || 4000;
+const port = config.port || 4000
 
 app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
-});
+  console.log(`Server is running on port: ${port}`)
+})
