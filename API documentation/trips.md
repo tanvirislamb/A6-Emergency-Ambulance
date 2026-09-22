@@ -15,11 +15,15 @@
     "fare": 120.5
   }
   ```
-  *(Leave `ambulanceId`/`driverId` empty to auto-pick the first available ambulance + driver.)*
+  *(Omit **both** `ambulanceId` and `driverId` to auto-pick the first available ambulance + driver. If only one is provided, the code auto-picks **both** — always provide both or neither.)*
 - **Success (201):** Returns the created trip.
 - **Errors:**
+  - `400` `Dispatch request not found`
   - `400` `Only pending requests can be dispatched`
+  - `400` `A patient cannot dispatch their own request`
+  - `400` `A trip already exists for this request`
   - `400` `Selected ambulance is not available`
+  - `400` `Selected driver is not available`
   - `400` `No available ambulance or driver right now`
 
 ---
@@ -28,7 +32,7 @@
 - **Endpoint:** `GET /api/v1/trips/:id`
 - **Roles:** PATIENT (own), DISPATCHER, ADMIN
 - **Description:** Returns trip with request, ambulance, driver, hospital, and payment.
-- **Errors:** `404` `Trip not found`, `400` `You cannot access this trip`
+- **Errors:** `404` `Trip not found`, `404` `You cannot access this trip`
 
 ---
 
@@ -46,8 +50,8 @@
   ARRIVED    → COMPLETED
   COMPLETED/CANCELLED → (terminal)
   ```
-- **Errors:** `400` `Cannot transition from EN_ROUTE to COMPLETED`
-- **Note:** On `COMPLETED` or `CANCELLED`, the ambulance and driver are freed back to `AVAILABLE`.
+- **Errors:** `400` `Trip not found`, `400` `Cannot transition from <CURRENT> to <NEXT>`
+- **Note:** On `COMPLETED` or `CANCELLED`, the ambulance and driver are freed back to `AVAILABLE`. `CANCELLED` also marks the request as `CANCELLED`.
 
 ---
 
@@ -55,8 +59,8 @@
 - **Endpoint:** `PATCH /api/v1/trips/:id/hospital`
 - **Roles:** DISPATCHER, ADMIN
 - **Request Body:** `{ "hospitalId": "cmr..." }`
-- **Description:** Assign a destination hospital during transport.
-- **Errors:** `400` `Hospital can only be assigned during transport`
+- **Description:** Assign a destination hospital while trip is `EN_ROUTE`, `AT_PICKUP`, or `TRANSPORTING`.
+- **Errors:** `400` `Hospital not found`, `400` `Trip not found`, `400` `Hospital can only be assigned during transport`
 
 ---
 

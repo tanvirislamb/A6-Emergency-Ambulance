@@ -2,7 +2,7 @@
 
 > **Auth Required:** All endpoints require a valid token.
 
-## 1. Create Emergency Request (Patient)
+## 1. Create Emergency Request
 - **Endpoint:** `POST /api/v1/requests`
 - **Roles:** PATIENT, DISPATCHER, ADMIN
 - **Request Body:**
@@ -19,10 +19,10 @@
 
 ---
 
-## 2. Get My Requests (Patient)
+## 2. Get My Requests
 - **Endpoint:** `GET /api/v1/requests/my?page=1&limit=10&status=PENDING&priority=CRITICAL`
 - **Roles:** PATIENT, DISPATCHER, ADMIN
-- **Description:** List the logged-in user's requests. Supports **pagination** and **filtering**.
+- **Description:** List the logged-in user's requests. Supports **pagination** and **filtering** by `status` and `priority`. Note: dispatchers/admins see only requests they created here — use `/search` for all requests.
 - **Success (200):**
   ```json
   {
@@ -40,15 +40,15 @@
 ## 3. Get Request by ID
 - **Endpoint:** `GET /api/v1/requests/:id`
 - **Description:** View a request. Patients can only view their own; dispatcher/admin any.
-- **Errors:** `404` `Request not found`, `400` `You cannot access this request`
+- **Errors:** `404` `Request not found`, `404` `You cannot access this request`
 
 ---
 
-## 4. Cancel Request (Patient)
+## 4. Cancel Request
 - **Endpoint:** `PATCH /api/v1/requests/:id/cancel`
 - **Roles:** PATIENT, DISPATCHER, ADMIN
-- **Description:** Cancel only a `PENDING` request.
-- **Errors:** `400` `Only pending requests can be cancelled`
+- **Description:** Cancel only a `PENDING` request. Only the owner of the request can cancel it.
+- **Errors:** `400` `Request not found`, `400` `You cannot cancel this request`, `400` `Only pending requests can be cancelled`
 
 ---
 

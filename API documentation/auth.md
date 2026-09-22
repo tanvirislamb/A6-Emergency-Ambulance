@@ -33,6 +33,7 @@
 - **Errors:**
   - `400` `User already exists`
   - `400` `You cannot register as an admin`
+  - `400` `Role must be PATIENT or DISPATCHER`
 
 ---
 
@@ -43,7 +44,7 @@
   { "email": "admin@medrush.com", "password": "Admin123" }
   ```
 - **Success (200):** Returns user (password omitted) and sets auth cookies.
-- **Errors:** `400` `User not found`, `400` `Wrong password`, `400` `Account is suspended`
+- **Errors:** `400` `User not found`, `400` `Account not found`, `400` `Wrong password`, `400` `Account is suspended`
 
 ---
 
@@ -51,26 +52,11 @@
 - **Endpoint:** `POST /api/v1/auth/refresh-token`
 - **Description:** Rotate tokens using the refresh cookie.
 - **Success (200):** Returns new tokens + user.
+- **Errors:** `401` `No refresh token provided`, `401` `Invalid refresh token`
 
 ---
 
-## 4. Social Login (GCP/Google)
-- **Endpoint:** `POST /api/v1/auth/social`
-- **Request Body:**
-  ```json
-  { "email": "user@gmail.com", "name": "Google User", "picture": "https://..." }
-  ```
-- **Description:** Creates a PATIENT account if none exists, else logs in.
-
----
-
-## 5. Logout
-- **Endpoint:** `POST /api/v1/auth/logout`
-- **Description:** Clears auth cookies.
-
----
-
-## 6. Get Me
+## 4. Get Me
 - **Endpoint:** `GET /api/v1/auth/me` (protected)
 - **Description:** Returns the currently authenticated user.
 - **Errors:** `401` `No token provided`, `401` `Unauthorized access` (suspended/deleted)

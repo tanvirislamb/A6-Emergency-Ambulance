@@ -15,7 +15,9 @@
     "licenseNo": "DL-2024-001"
   }
   ```
-- **Errors:** `400` `This user already has a driver profile`
+- **Errors:**
+  - `400` `User not found to associate as driver`
+  - `400` `This user already has a driver profile`
 
 ### 2. List Drivers
 - **Endpoint:** `GET /api/v1/drivers?availability=AVAILABLE&search=Salam&page=1&limit=10`

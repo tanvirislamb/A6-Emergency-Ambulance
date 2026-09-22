@@ -5,7 +5,12 @@
 > - Success: `{ "success": true, "message": "...", "data": {} }`
 > - Error: `{ "success": false, "message": "...", "errors": [] }`
 
-Total meaningful endpoints: **40**
+Total endpoints: **39** (38 under `/api/v1` + 1 root health check)
+
+## API Health Check
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | Health check | Public |
 
 ## Authentication (`/api/v1/auth`)
 | Method | Endpoint | Description | Auth |
@@ -13,8 +18,6 @@ Total meaningful endpoints: **40**
 | POST | `/auth/register` | Register patient/dispatcher | Public |
 | POST | `/auth/login` | Login, set JWT cookies | Public |
 | POST | `/auth/refresh-token` | Rotate refresh token | Public |
-| POST | `/auth/social` | Google/GCP social login | Public |
-| POST | `/auth/logout` | Clear cookies | Public |
 | GET | `/auth/me` | Current user | ✓ |
 
 ## Dispatch Requests (`/api/v1/requests`)
@@ -24,7 +27,7 @@ Total meaningful endpoints: **40**
 | GET | `/requests/my` | My requests (paginated/filtered) | ✓ |
 | GET | `/requests/:id` | Request detail | ✓ |
 | PATCH | `/requests/:id/cancel` | Cancel pending request | ✓ |
-| GET | `/requests/search` | Search requests (dispatcher) | ✓ |
+| GET | `/requests/search` | Search requests (dispatcher/admin) | ✓ |
 
 ## Ambulances (`/api/v1/ambulances`)
 | Method | Endpoint | Description | Auth |
