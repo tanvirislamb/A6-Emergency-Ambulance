@@ -1,26 +1,26 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/prisma"
 
 const getAllUsersFromDb = async (query: any) => {
-  const { role, status, search, page = "1", limit = "10" } = query;
-  const where: any = { deletedAt: null };
-  if (role) where.role = role.toUpperCase();
-  if (status) where.status = status.toUpperCase();
+  const { role, status, search, page = "1", limit = "10" } = query
+  const where: any = { deletedAt: null }
+  if (role) where.role = role.toUpperCase()
+  if (status) where.status = status.toUpperCase()
   if (search) {
     where.OR = [
       { name: { contains: search, mode: "insensitive" } },
       { email: { contains: search, mode: "insensitive" } },
-    ];
+    ]
   }
 
-  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit);
+  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit)
   const data = await prisma.user.findMany({
     where,
     skip,
     take: Number.parseInt(limit),
     omit: { password: true },
     orderBy: { createdAt: "desc" },
-  });
-  const total = await prisma.user.count({ where });
+  })
+  const total = await prisma.user.count({ where })
 
   return {
     meta: {
@@ -30,20 +30,20 @@ const getAllUsersFromDb = async (query: any) => {
       totalPages: Math.ceil(total / Number.parseInt(limit)),
     },
     data,
-  };
-};
+  }
+}
 
 const changeUserStatusInDb = async (userId: string, status: string, actorId: string, actorRole: string) => {
   if (userId === actorId) {
-    throw new Error("You cannot change your own status");
+    throw new Error("You cannot change your own status")
   }
   if (!["ACTIVE", "SUSPENDED"].includes(status.toUpperCase())) {
-    throw new Error("Status must be ACTIVE or SUSPENDED");
+    throw new Error("Status must be ACTIVE or SUSPENDED")
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("User not found")
   }
 
   const result = await prisma.$transaction(async (tx) => {
@@ -51,7 +51,7 @@ const changeUserStatusInDb = async (userId: string, status: string, actorId: str
       where: { id: userId },
       data: { status: status.toUpperCase() as any },
       omit: { password: true },
-    });
+    })
     await tx.auditLog.create({
       data: {
         actorId,
@@ -61,24 +61,24 @@ const changeUserStatusInDb = async (userId: string, status: string, actorId: str
         entityId: userId,
         meta: { from: user.status, to: status.toUpperCase() },
       },
-    });
-    return updated;
-  });
+    })
+    return updated
+  })
 
-  return result;
-};
+  return result
+}
 
 const changeUserRoleInDb = async (userId: string, role: string, actorId: string, actorRole: string) => {
   if (userId === actorId) {
-    throw new Error("You cannot change your own role");
+    throw new Error("You cannot change your own role")
   }
   if (!["PATIENT", "DISPATCHER", "ADMIN"].includes(role.toUpperCase())) {
-    throw new Error("Role must be PATIENT, DISPATCHER or ADMIN");
+    throw new Error("Role must be PATIENT, DISPATCHER or ADMIN")
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.user.findUnique({ where: { id: userId } })
   if (!user) {
-    throw new Error("User not found");
+    throw new Error("User not found")
   }
 
   const result = await prisma.$transaction(async (tx) => {
@@ -86,7 +86,7 @@ const changeUserRoleInDb = async (userId: string, role: string, actorId: string,
       where: { id: userId },
       data: { role: role.toUpperCase() as any },
       omit: { password: true },
-    });
+    })
     await tx.auditLog.create({
       data: {
         actorId,
@@ -96,12 +96,12 @@ const changeUserRoleInDb = async (userId: string, role: string, actorId: string,
         entityId: userId,
         meta: { from: user.role, to: role.toUpperCase() },
       },
-    });
-    return updated;
-  });
+    })
+    return updated
+  })
 
-  return result;
-};
+  return result
+}
 
 const getDashboardStatsFromDb = async () => {
   const [
@@ -150,7 +150,7 @@ const getDashboardStatsFromDb = async () => {
       by: ["priority"],
       _count: { _all: true },
     }),
-  ]);
+  ])
 
   return {
     users: { totalUsers, totalPatients, totalDispatchers, totalAdmins },
@@ -170,24 +170,24 @@ const getDashboardStatsFromDb = async () => {
     },
     revenue: totalRevenue._sum.amount || 0,
     priorityBreakdown,
-  };
-};
+  }
+}
 
 const getAuditLogsFromDb = async (query: any) => {
-  const { entity, action, page = "1", limit = "10" } = query;
-  const where: any = {};
-  if (entity) where.entity = entity;
-  if (action) where.action = action;
+  const { entity, action, page = "1", limit = "10" } = query
+  const where: any = {}
+  if (entity) where.entity = entity
+  if (action) where.action = action
 
-  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit);
+  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit)
   const data = await prisma.auditLog.findMany({
     where,
     skip,
     take: Number.parseInt(limit),
     include: { user: { omit: { password: true } } },
     orderBy: { createdAt: "desc" },
-  });
-  const total = await prisma.auditLog.count({ where });
+  })
+  const total = await prisma.auditLog.count({ where })
 
   return {
     meta: {
@@ -197,15 +197,15 @@ const getAuditLogsFromDb = async (query: any) => {
       totalPages: Math.ceil(total / Number.parseInt(limit)),
     },
     data,
-  };
-};
+  }
+}
 
 const getAllTripsFromDb = async (query: any) => {
-  const { status, page = "1", limit = "10" } = query;
-  const where: any = {};
-  if (status) where.status = status.toUpperCase();
+  const { status, page = "1", limit = "10" } = query
+  const where: any = {}
+  if (status) where.status = status.toUpperCase()
 
-  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit);
+  const skip = (Number.parseInt(page) - 1) * Number.parseInt(limit)
   const data = await prisma.trip.findMany({
     where,
     skip,
@@ -218,8 +218,8 @@ const getAllTripsFromDb = async (query: any) => {
       payment: true,
     },
     orderBy: { createdAt: "desc" },
-  });
-  const total = await prisma.trip.count({ where });
+  })
+  const total = await prisma.trip.count({ where })
 
   return {
     meta: {
@@ -229,8 +229,8 @@ const getAllTripsFromDb = async (query: any) => {
       totalPages: Math.ceil(total / Number.parseInt(limit)),
     },
     data,
-  };
-};
+  }
+}
 
 export const adminService = {
   getAllUsersFromDb,
@@ -239,4 +239,4 @@ export const adminService = {
   getDashboardStatsFromDb,
   getAuditLogsFromDb,
   getAllTripsFromDb,
-};
+}
