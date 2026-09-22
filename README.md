@@ -184,19 +184,7 @@ Auth is passed as `httpOnly` cookies (`accessToken`, `refreshToken`) or `Authori
 
 ## Getting Started
 
-### 1. Environment variables (`.env`)
-
-```env
-PORT=3000
-DATABASE_URL=postgresql://<user>:<password>@<host>/<db>?sslmode=require
-ACCESS_SECRET=<long-random-string>
-REFRESH_SECRET=<long-random-string>
-STRIPE_SECRET_KEY=sk_test_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-CLIENT_URL=http://localhost:3000
-```
-
-### 2. Install & set up the database
+### 1. Install & set up the database
 
 ```bash
 npm install          # runs `prisma generate` automatically
@@ -205,7 +193,7 @@ npx prisma migrate dev   # recommended - create + apply migrations
 npx prisma db push       # quick schema sync (no migration files)
 ```
 
-### 3. Seed demo data
+### 2. Seed demo data
 
 ```bash
 npm run seed
@@ -218,7 +206,7 @@ npm run seed
 | Patient | `patient@medrush.com` | `Patient123` |
 | Driver (user) | `driver@medrush.com` | `Dispatch123` |
 
-### 4. Run
+### 3. Run
 
 ```bash
 npm run dev    # local dev server (tsx watch)
